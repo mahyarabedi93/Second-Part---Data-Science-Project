@@ -91,9 +91,6 @@ with tab1:
     x_min = col1.number_input('Insert a minimum value for x-axis',value=0.00)
     x_max = col2.number_input('Insert a maximum value for x-axis',value=1000.00)
 
-    from matplotlib import rc
-    rc('font',**{'family':'serif','serif':['Times']})
-    rc('text', usetex=True)
     Figure=plt.figure(figsize=(12,2))
     plt.subplot(1,2,1)
     plt.plot(Light_Treatments['Wavelength'] , Light_Treatments[Light_Treatment_Name], linewidth=1,color='black')
