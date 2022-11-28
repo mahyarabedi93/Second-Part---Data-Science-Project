@@ -76,17 +76,17 @@ st.markdown('<p class="font_title">Indoor Plant Growth</p>', unsafe_allow_html=T
 
 st.image("https://www.springwise.com/wp-content/uploads/2022/03/innovationsustainabilitycaptured-CO2-used-in-greenhouses.png")
 cols=st.columns(6,gap='medium')
-with cols[0].expander("Calming Video:"):
+with cols[0].expander("Calming Video"):
     st.video("https://www.youtube.com/watch?v=SA8lu-m2IZY",start_time=0)
-with cols[1].expander("Calming Video:"):
+with cols[1].expander("Calming Video"):
     st.video("https://www.youtube.com/watch?v=lFcSrYw-ARY",start_time=0)
-with cols[2].expander("Calming Video:"):
+with cols[2].expander("Calming Video"):
     st.video("https://www.youtube.com/watch?v=_kT38XB1YHo",start_time=0)
-with cols[3].expander("Calming Video:"):
+with cols[3].expander("Calming Video"):
     st.video("https://www.youtube.com/watch?v=_jvyrwwOFys",start_time=0)
-with cols[4].expander("Calming Video:"):
+with cols[4].expander("Calming Video"):
     st.video("https://www.youtube.com/watch?v=vybkZeU22bQ",start_time=0)
-with cols[5].expander("Calming Video:"):
+with cols[5].expander("Calming Video"):
     st.video("https://www.youtube.com/watch?v=1ZYbU82GVz4",start_time=0)
 
 ####################################################################################################################################################################
@@ -841,59 +841,73 @@ with tab8:
     
     if Scaler:
         Scaler_Type = cols[2].selectbox('Select scaler object for GPR:',['Min-Max Scaler', 'Standard Scaler', 'Max-Abs Scaler'],index = 0)
-        
         if Scaler_Type == 'Min-Max Scaler':
             Scaler_Object = MinMaxScaler()
-        
         elif Scaler_Type == 'Standard Scaler':
             Scaler_Object = StandardScaler()
-        
         else:
-            Scaler_Object = MaxAbsScaler()
-        
+            Scaler_Object = MaxAbsScaler()  
         X_Scaled_GPR = Scaler_Object.fit_transform(X_GPR)
         X_Train_Scaled_GPR =Scaler_Object.transform(X_Train_GPR)
         X_Test_Scaled_GPR =Scaler_Object.transform(X_Test_GPR)
         GPR_Object = GaussianProcessRegressor(kernel=Kernel_GPR_Object, alpha=Alpha_GPR, optimizer='fmin_l_bfgs_b',
                                       n_restarts_optimizer=0, random_state=Random_State_GPR).fit(X_Train_Scaled_GPR,Y_Train_GPR)
-    
+        Mean_Prediction_GPR , Std_Prediction_GPR = GPR_Object.predict(X_Scaled_GPR, return_std=True)
     else:
         GPR_Object = GaussianProcessRegressor(kernel=Kernel_GPR_Object, alpha=Alpha_GPR, optimizer='fmin_l_bfgs_b',
                                       n_restarts_optimizer=0, random_state=Random_State_GPR).fit(X_Train_GPR,Y_Train_GPR)
+        Mean_Prediction_GPR , Std_Prediction_GPR = GPR_Object.predict(X_GPR, return_std=True)
+    
+    colm = st.columns(4,gap='small')
+    Accuracy_Score = colm[0].selectbox('Select score metric GPR:',['mean_absolute_error','mean_squared_error','r2_score'],index = 2)
+    if Accuracy_Score == 'mean_absolute_error':
+        Score_Metric_GPR = mean_absolute_error(Y_GPR,Mean_Prediction_GPR)
+    elif Accuracy_Score == 'mean_squared_error':
+        Score_Metric_GPR = mean_squared_error(Y_GPR,Mean_Prediction_GPR)
+    else :
+        Score_Metric_GPR = r2_score(Y_GPR,Mean_Prediction_GPR)
+    
+    st.write('Accuracy of investigated Gaussian Process Regression using the suggested kernel configuration based on the "',Accuracy_Score,'" metric, is ', Score_Metric_GPR, '.')
+    st.write(' ')
+    
+    fig = go.Figure([
+        go.Scatter(
+            x=Index,
+            y=Y_GPR,
+            mode='markers',
+            marker_symbol='circle',
+            name='Acutal '+Target_Variable_GPR,
+        ),
+        go.Scatter(
+            x=Index,
+            y=Mean_Prediction_GPR,
+            mode='lines',
+            line=dict(color='red'),
+            name='GPR Prediction for '+Target_Variable_GPR,
+        ),
+        go.Scatter(
+            name='Upper Bound',
+            x=Index,
+            y=Mean_Prediction_GPR+1.9*Std_Prediction_GPR,
+            mode='lines',
+            marker=dict(color="#444"),
+            line=dict(width=0),
+            showlegend=False
+        ),
+        go.Scatter(
+            name='Lower Bound',
+            x=Index,
+            y=Mean_Prediction_GPR-1.9*Std_Prediction_GPR,
+            marker=dict(color="#444"),
+            line=dict(width=0),
+            mode='lines',
+            fillcolor='rgba(68, 68, 68, 0.3)',
+            fill='tonexty',
+            showlegend=False)
+    ])
+    fig.update_layout(yaxis_title=Target_Variable_GPR)
         
-    Mean_Prediction_GPR , Std_Prediction_GPR = GPR_Object.predict(X_GPR, return_std=True)
-    for i in range (len(Feature_Variable_GPR)):
-        fig = go.Figure([
-            go.Scatter(
-                name='Mean',
-                x=X_GPR[:,i],
-                y=Y_GPR,
-                mode='lines',
-                line=dict(color='red'),
-            ),
-            go.Scatter(
-                name='Upper Bound',
-                x=X_GPR[:,i],
-                y=Y_GPR+1.9*Std_Prediction_GPR,
-                mode='lines',
-                marker=dict(color="#444"),
-                line=dict(width=0),
-                showlegend=False
-            ),
-            go.Scatter(
-                name='Lower Bound',
-                x=X_GPR[:,i],
-                y=Y_GPR-1.9*Std_Prediction_GPR,
-                marker=dict(color="#444"),
-                line=dict(width=0),
-                mode='lines',
-                fillcolor='rgba(68, 68, 68, 0.3)',
-                fill='tonexty',
-                showlegend=False)
-        ])
-        fig.update_layout(yaxis_title=Target_Variable_GPR, xaxis_title=Feature_Variable_GPR[i])
-        
-        st.plotly_chart(fig)
+    st.plotly_chart(fig)
     
 ##################################################################################################################################################################
 # Support Vector Regression
@@ -901,6 +915,184 @@ with tab9:
     st.write(' ')
     st.markdown('<p class="font_text">Support Vector Regression:</p>', unsafe_allow_html=True)
     st.write(' ')
+    col1 , col2 = st.columns(2,gap='medium')
+    Target_Variable_SVR = col2.multiselect('Select target feature for Support Vector Regression:',['Fresh Mass (g)', 'Dry Mass (g)'],default = 'Dry Mass (g)')
+    Feature_Variable_SVR = col1.multiselect(
+            'Select input feature(s) for Support Vector Regression:',
+            ['Energy', 'Energy (400-500)','Energy (500-600)', 'Energy (600-700)', 'Energy (700-800)', 'PFD','PFD (400-500)', 'PFD (500-600)', 'PFD (600-700)', 'PFD (700-800)',
+            'CO2 ave', 'CO2 std', 'T ave', 'T std', 'RH ave', 'RH std','Photoperiod (h)', 'Day'],default = 'Energy')
+    Y_SVR = data[Target_Variable_SVR].to_numpy()
+    X_SVR = data[Feature_Variable_SVR].to_numpy()
+    col = st.columns(4,gap='small')
+    Kernel_SVR = col[0].selectbox('Select kernel function for SVR:',['linear', 'poly', 'rbf', 'sigmoid'],index = 2)
+    Max_Iteration_SVR = col[1].slider('Input a value for maximum number of iteration SVR', 0, 40000, 2000)
+    Regularization_SVR = col[2].number_input('Input a value for regularization parameter SVR: ',value=1.0,format='%f')
+    if Kernel_SVR == 'poly':
+        Degree_SVR = col[3].slider('Input the polynomial degree SVR:', 0, 20, 3)
+    cols = st.columns(4,gap='medium')
+    Epsilon_SVR = cols[1].number_input('Input a value for epsilon SVR: ',value=0.1,format='%f')
+    if Kernel_SVR == 'poly' or Kernel_SVR == 'rbf' or Kernel_SVR == 'sigmoid':
+        Gamma_SVR = cols[2].selectbox('Select kernel coefficient for SVR:',['scale', 'auto','numeric'],index = 0)
+        if Gamma_SVR == 'numeric':
+            Gamma_SVR_Numeric = cols[3].number_input('Input a numerical value for Kernel Coefficient SVR: ',value=1.0,format='%f')
+    Train_Size_SVR = cols[0].number_input('Input a value for train-size ratio SVR:',value=0.8,format='%f')
+    X_Train_SVR, X_Test_SVR, Y_Train_SVR, Y_Test_SVR = train_test_split(X_SVR, Y_SVR, train_size=Train_Size_SVR)
+    
+    if Kernel_SVR == 'poly':
+        if Gamma_SVR == 'numeric':
+            if len(Target_Variable_SVR)==1:
+                SVR_Object = SVR(kernel=Kernel_SVR, degree=Degree_SVR, gamma=Gamma_SVR_Numeric, C=Regularization_SVR, epsilon=Epsilon_SVR, max_iter=Max_Iteration_SVR)
+            else:
+                SVR_Object = MultiOutputRegressor(SVR(kernel=Kernel_SVR, degree=Degree_SVR, gamma=Gamma_SVR_Numeric, C=Regularization_SVR, epsilon=Epsilon_SVR, max_iter=Max_Iteration_SVR))
+        else:
+            if len(Target_Variable_SVR)==1:
+                SVR_Object = SVR(kernel=Kernel_SVR, degree=Degree_SVR, gamma=Gamma_SVR, C=Regularization_SVR, epsilon=Epsilon_SVR, max_iter=Max_Iteration_SVR)
+            else:
+                SVR_Object = MultiOutputRegressor(SVR(kernel=Kernel_SVR, degree=Degree_SVR, gamma=Gamma_SVR, C=Regularization_SVR, epsilon=Epsilon_SVR, max_iter=Max_Iteration_SVR))
+    
+    elif Kernel_SVR == 'rbf':
+        if Gamma_SVR == 'numeric':
+            if len(Target_Variable_SVR)==1:
+                SVR_Object = SVR(kernel=Kernel_SVR, gamma=Gamma_SVR_Numeric, C=Regularization_SVR, epsilon=Epsilon_SVR, max_iter=Max_Iteration_SVR)
+            else:
+                SVR_Object = MultiOutputRegressor(SVR(kernel=Kernel_SVR, gamma=Gamma_SVR_Numeric, C=Regularization_SVR, epsilon=Epsilon_SVR, max_iter=Max_Iteration_SVR))
+        else:
+            if len(Target_Variable_SVR)==1:
+                SVR_Object = SVR(kernel=Kernel_SVR, gamma=Gamma_SVR, C=Regularization_SVR, epsilon=Epsilon_SVR, max_iter=Max_Iteration_SVR)
+            else:
+                SVR_Object = MultiOutputRegressor(SVR(kernel=Kernel_SVR, gamma=Gamma_SVR, C=Regularization_SVR, epsilon=Epsilon_SVR, max_iter=Max_Iteration_SVR))
+    
+    elif Kernel_SVR == 'sigmoid':
+        if Gamma_SVR == 'numeric':
+            if len(Target_Variable_SVR)==1:
+                SVR_Object = SVR(kernel=Kernel_SVR, gamma=Gamma_SVR_Numeric, C=Regularization_SVR, epsilon=Epsilon_SVR, max_iter=Max_Iteration_SVR)
+            else:
+                SVR_Object = MultiOutputRegressor(SVR(kernel=Kernel_SVR, gamma=Gamma_SVR_Numeric, C=Regularization_SVR, epsilon=Epsilon_SVR, max_iter=Max_Iteration_SVR))
+        else:
+            if len(Target_Variable_SVR)==1:
+                SVR_Object = SVR(kernel=Kernel_SVR, gamma=Gamma_SVR, C=Regularization_SVR, epsilon=Epsilon_SVR, max_iter=Max_Iteration_SVR)
+            else:
+                SVR_Object = MultiOutputRegressor(SVR(kernel=Kernel_SVR, gamma=Gamma_SVR, C=Regularization_SVR, epsilon=Epsilon_SVR, max_iter=Max_Iteration_SVR))
+    
+    else:
+        if len(Target_Variable_SVR)==1:
+                SVR_Object = SVR(kernel=Kernel_SVR, C=Regularization_SVR, epsilon=Epsilon_SVR, max_iter=Max_Iteration_SVR)
+        else:
+            SVR_Object = MultiOutputRegressor(SVR(kernel=Kernel_SVR, C=Regularization_SVR, epsilon=Epsilon_SVR, max_iter=Max_Iteration_SVR))
+
+    col = st.columns(4,gap='medium')
+    Scaler = col[0].checkbox('Considering scaling for SVR')
+    
+    if Scaler:
+        Scaler_Type = col[1].selectbox('Select scaler object for SVR:',['Min-Max Scaler', 'Standard Scaler', 'Max-Abs Scaler'],index = 0)
+        if Scaler_Type == 'Min-Max Scaler':
+            Scaler_Object = MinMaxScaler()
+        elif Scaler_Type == 'Standard Scaler':
+            Scaler_Object = StandardScaler()
+        else:
+            Scaler_Object = MaxAbsScaler()  
+        X_Scaled_SVR = Scaler_Object.fit_transform(X_SVR)
+        X_Train_Scaled_SVR =Scaler_Object.transform(X_Train_SVR)
+        X_Test_Scaled_SVR =Scaler_Object.transform(X_Test_SVR)
+        SVR_Object.fit(X_Train_Scaled_SVR,Y_Train_SVR)
+        Y_Predic_SVR = SVR_Object.predict(X_Scaled_SVR)
+    else:
+        SVR_Object.fit(X_Train_SVR,Y_Train_SVR)
+        Y_Predic_SVR = SVR_Object.predict(X_SVR)
+    
+    Accuracy_Score = col[3].selectbox('Select score metric SVR:',['mean_absolute_error','mean_squared_error','r2_score'],index = 2)
+    if Accuracy_Score == 'mean_absolute_error':
+        Score_Metric_SVR = mean_absolute_error(Y_SVR,Y_Predic_SVR)
+    elif Accuracy_Score == 'mean_squared_error':
+        Score_Metric_SVR = mean_squared_error(Y_SVR,Y_Predic_SVR)
+    else :
+        Score_Metric_SVR = r2_score(Y_SVR,Y_Predic_SVR)
+    
+    st.write('Accuracy of investigated Support Vector Regression using the suggested kernel configuration based on the "',Accuracy_Score,'" metric, is ', Score_Metric_SVR, '.')
+    st.write(' ')
+    
+    
+    if len(Target_Variable_SVR)==1:
+        SVR_Dataframe=pd.DataFrame(index=np.arange(len(Y_Linear)), columns=np.arange(3))
+        SVR_Dataframe.columns=['Index','Actual','Predict']
+        SVR_Dataframe.iloc[:,0]=Index
+        SVR_Dataframe.iloc[:,1]=Y_SVR
+        SVR_Dataframe.iloc[:,2]=Y_Predic_SVR
+        fig2 = go.Figure()
+        fig2.add_trace(go.Scatter(x=SVR_Dataframe.iloc[:,0], y=SVR_Dataframe.iloc[:,1],marker_symbol='square',
+                            mode='markers',
+                            name='Actual '+Target_Variable_SVR[0] + ' vs. Index'))
+        fig2.add_trace(go.Scatter(x=SVR_Dataframe.iloc[:,0], y=SVR_Dataframe.iloc[:,2],marker_symbol='circle',
+                            mode='markers',
+                            name='Prediction '+Target_Variable_SVR[0] + ' vs. Index'))
+    else:
+        SVR_Dataframe=pd.DataFrame(index=np.arange(len(Y_Linear)), columns=np.arange(5))
+        SVR_Dataframe.columns=['Index','Actual '+Target_Variable_SVR[0],'Predict '+Target_Variable_SVR[0],'Actual '+Target_Variable_SVR[1],'Predict '+Target_Variable_SVR[1]]
+        SVR_Dataframe.iloc[:,0]=Index
+        SVR_Dataframe.iloc[:,1]=Y_SVR[:,0]
+        SVR_Dataframe.iloc[:,2]=Y_Predic_SVR[:,0]
+        SVR_Dataframe.iloc[:,3]=Y_SVR[:,1]
+        SVR_Dataframe.iloc[:,4]=Y_Predic_SVR[:,1]
+        fig2 = make_subplots(rows=1, cols=2)
+        fig2.add_trace(
+            go.Scatter(x=SVR_Dataframe.iloc[:,0], y=SVR_Dataframe.iloc[:,1],marker_symbol='square',
+                            mode='markers',
+                            name='Actual '+Target_Variable_SVR[0] + ' vs. Index'),
+            row=1, col=1
+        )
+        fig2.add_trace(
+            go.Scatter(x=SVR_Dataframe.iloc[:,0], y=SVR_Dataframe.iloc[:,2],marker_symbol='circle',
+                            mode='markers',
+                            name='Predict '+Target_Variable_SVR[0] + ' vs. Index'),
+            row=1, col=1
+        )
+
+        fig2.add_trace(
+            go.Scatter(x=SVR_Dataframe.iloc[:,0], y=SVR_Dataframe.iloc[:,3],marker_symbol='square',
+                            mode='markers',
+                            name='Actual '+Target_Variable_SVR[1] + ' vs. Index'),
+            row=1, col=2
+        )
+        fig2.add_trace(
+            go.Scatter(x=SVR_Dataframe.iloc[:,0], y=SVR_Dataframe.iloc[:,4],marker_symbol='circle',
+                            mode='markers',
+                            name='Predict '+Target_Variable_SVR[1] + ' vs. Index'),
+            row=1, col=2
+        )    
+    st.plotly_chart(fig2)
+    
+    
+    st.write(' ')
+    st.markdown('<p class="font_text">Support Vector Regression Learning Curves:</p>', unsafe_allow_html=True)
+    st.write(' ')
+    
+    cols = st.columns(4,gap='medium')
+    Scaler = cols[0].checkbox('Considering scaling for learning curve SVR')
+    Scoring_SVR = cols[1].selectbox('Select scoring method SVR:',['neg_mean_squared_error', 'mean_absolute_error', 'neg_root_mean_squared_error', 'r2'],index = 0)
+    CV_SVR = cols[2].slider('Input a value for number of cross-validation SVR', 0, 20, 5)
+    if Scaler:
+        Scaler_Type = cols[3].selectbox('Select scaler object for learning cruve:',['Min-Max Scaler', 'Standard Scaler', 'Max-Abs Scaler'],index = 0)
+        if Scaler_Type == 'Min-Max Scaler':
+            Scaler_Object = MinMaxScaler()
+        elif Scaler_Type == 'Standard Scaler':
+            Scaler_Object = StandardScaler()
+        else:
+            Scaler_Object = MaxAbsScaler()
+        X_Scaled_SVR = Scaler_Object.fit_transform(X_SVR)
+        train_sizes, train_scores, test_scores = learning_curve(SVR_Object, X_Scaled_SVR, Y_SVR,
+                                                        cv = CV_SVR, scoring=Scoring_SVR, 
+                                                        train_sizes = np.linspace(0.1, 0.9, 51))
+    else:
+        train_sizes, train_scores, test_scores = learning_curve(SVR_Object, X_SVR, Y_SVR,
+                                                        cv = CV_SVR, scoring=Scoring_SVR, 
+                                                        train_sizes = np.linspace(0.1, 0.9, 51))
+    
+    test_mean  = np.mean(test_scores, axis=1)
+    train_mean = np.mean(train_scores, axis=1)
+    fig1 = go.Figure()
+    fig1.add_trace(go.Scatter(x=train_sizes, y=train_mean,mode='lines',name='Training Score'))
+    fig1.add_trace(go.Scatter(x=train_sizes, y=test_mean ,mode='lines',name='Testing Score'))
+    st.plotly_chart(fig1)
 ##################################################################################################################################################################
 
 st.markdown('<p class="font_header">References: </p>', unsafe_allow_html=True)
