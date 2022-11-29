@@ -753,7 +753,7 @@ with tab7:
         )
         fig2.update_yaxes(title_text=Target_Variable, secondary_y=False)
         fig2.update_xaxes(title_text="Index in dataset")
-        fig2.update_yaxes(title_text="<b>Difference</b>  between <b>Prediction</b> and <b>Actual</b> value for " + Target_Variable_DNN, secondary_y=True)
+        fig2.update_yaxes(title_text="<b>Difference</b>  between <b>Prediction</b> and <b>Actual</b> value for " + Target_Variable_DNN[0], secondary_y=True)
     else:
         DNN_Dataframe=pd.DataFrame(index=np.arange(len(Y_Linear)), columns=np.arange(5))
         DNN_Dataframe.columns=['Index','Actual '+Target_Variable_DNN[0],'Predict '+Target_Variable_DNN[0],'Actual '+Target_Variable_DNN[1],'Predict '+Target_Variable_DNN[1]]
