@@ -9,6 +9,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 import hiplot as hip
+from plotly.subplots import make_subplots
 from mpl_toolkits.mplot3d import Axes3D
 from sklearn.kernel_ridge import KernelRidge
 from sklearn.model_selection import KFold
@@ -510,14 +511,30 @@ with tab5:
     Linear_Dataframe.iloc[:,0]=Index
     Linear_Dataframe.iloc[:,1]=Y_Linear
     Linear_Dataframe.iloc[:,2]=Y_Predic
-    fig = go.Figure()
+    # fig = go.Figure()
+    # fig.add_trace(go.Scatter(x=Linear_Dataframe['Index'], y=Linear_Dataframe['Actual'],marker_symbol='square',
+    #                     mode='markers',
+    #                     name='Actual'))
+    # fig.add_trace(go.Scatter(x=Linear_Dataframe['Index'], y=Linear_Dataframe['Predict'],marker_symbol='circle',
+    #                     mode='markers',
+    #                     name='Prediction'))
+    fig = make_subplots(specs=[[{"secondary_y": True}]])
     fig.add_trace(go.Scatter(x=Linear_Dataframe['Index'], y=Linear_Dataframe['Actual'],marker_symbol='square',
                         mode='markers',
-                        name='Actual'))
+                        name='Actual '+Target_Variable),secondary_y=False,)
     fig.add_trace(go.Scatter(x=Linear_Dataframe['Index'], y=Linear_Dataframe['Predict'],marker_symbol='circle',
                         mode='markers',
-                        name='Prediction'))
-
+                        name='Prediction '+Target_Variable),secondary_y=False,)
+    fig.add_trace(go.Bar(x=Linear_Dataframe['Index'], y=np.abs(Linear_Dataframe['Predict']-Linear_Dataframe['Actual']),opacity=0.5, name="Difference"),
+    secondary_y=True,)
+    fig.update_layout(
+        autosize=False,
+        width=1500,
+        height=600,
+    )
+    fig.update_yaxes(title_text=Target_Variable, secondary_y=False)
+    fig.update_xaxes(title_text="Index in dataset")
+    fig.update_yaxes(title_text="<b>Difference</b>  between <b>Prediction</b> and <b>Actual</b> value for " + Target_Variable, secondary_y=True)
     st.plotly_chart(fig)
     # Coef_Linear = reg.coef_
     # st.write(Linear_Regression,' Correlations:')
@@ -720,13 +737,23 @@ with tab7:
         DNN_Dataframe.iloc[:,0]=Index
         DNN_Dataframe.iloc[:,1]=Y_DNN
         DNN_Dataframe.iloc[:,2]=Y_Predic_DNN
-        fig2 = go.Figure()
+        fig2 = make_subplots(specs=[[{"secondary_y": True}]])
         fig2.add_trace(go.Scatter(x=DNN_Dataframe.iloc[:,0], y=DNN_Dataframe.iloc[:,1],marker_symbol='square',
                             mode='markers',
-                            name='Actual '+Target_Variable_DNN[0] + ' vs. Index'))
+                            name='Actual '+Target_Variable_DNN[0] + ' vs. Index'),secondary_y=False,)
         fig2.add_trace(go.Scatter(x=DNN_Dataframe.iloc[:,0], y=DNN_Dataframe.iloc[:,2],marker_symbol='circle',
                             mode='markers',
-                            name='Prediction '+Target_Variable_DNN[0] + ' vs. Index'))
+                            name='Prediction '+Target_Variable_DNN[0] + ' vs. Index'),secondary_y=False,)        
+        fig2.add_trace(go.Bar(x=DNN_Dataframe.iloc[:,0], y=np.abs(DNN_Dataframe.iloc[:,2]-DNN_Dataframe.iloc[:,1]),
+                              opacity=0.5, name="Difference"), secondary_y=True,)
+        fig2.update_layout(
+            autosize=False,
+            width=1500,
+            height=600,
+        )
+        fig2.update_yaxes(title_text=Target_Variable, secondary_y=False)
+        fig2.update_xaxes(title_text="Index in dataset")
+        fig2.update_yaxes(title_text="<b>Difference</b>  between <b>Prediction</b> and <b>Actual</b> value for " + Target_Variable_DNN, secondary_y=True)
     else:
         DNN_Dataframe=pd.DataFrame(index=np.arange(len(Y_Linear)), columns=np.arange(5))
         DNN_Dataframe.columns=['Index','Actual '+Target_Variable_DNN[0],'Predict '+Target_Variable_DNN[0],'Actual '+Target_Variable_DNN[1],'Predict '+Target_Variable_DNN[1]]
@@ -735,32 +762,54 @@ with tab7:
         DNN_Dataframe.iloc[:,2]=Y_Predic_DNN[:,0]
         DNN_Dataframe.iloc[:,3]=Y_DNN[:,1]
         DNN_Dataframe.iloc[:,4]=Y_Predic_DNN[:,1]
-        fig2 = make_subplots(rows=1, cols=2)
+        fig2 = make_subplots(rows=1, cols=2,
+                    specs=[[{"secondary_y": True}, {"secondary_y": True}]])
         fig2.add_trace(
             go.Scatter(x=DNN_Dataframe.iloc[:,0], y=DNN_Dataframe.iloc[:,1],marker_symbol='square',
                             mode='markers',
                             name='Actual '+Target_Variable_DNN[0] + ' vs. Index'),
-            row=1, col=1
+            row=1, col=1,secondary_y=False,
         )
         fig2.add_trace(
             go.Scatter(x=DNN_Dataframe.iloc[:,0], y=DNN_Dataframe.iloc[:,2],marker_symbol='circle',
                             mode='markers',
                             name='Predict '+Target_Variable_DNN[0] + ' vs. Index'),
-            row=1, col=1
+            row=1, col=1,secondary_y=False,
         )
-
+        fig2.add_trace(go.Bar(x=DNN_Dataframe.iloc[:,0], y=np.abs(DNN_Dataframe.iloc[:,2]-DNN_Dataframe.iloc[:,1]),
+                              opacity=0.5, name="Difference "+ Target_Variable_DNN[0]),row=1, col=1, secondary_y=True,)
         fig2.add_trace(
             go.Scatter(x=DNN_Dataframe.iloc[:,0], y=DNN_Dataframe.iloc[:,3],marker_symbol='square',
                             mode='markers',
                             name='Actual '+Target_Variable_DNN[1] + ' vs. Index'),
-            row=1, col=2
+            row=1, col=2,secondary_y=False,
         )
         fig2.add_trace(
             go.Scatter(x=DNN_Dataframe.iloc[:,0], y=DNN_Dataframe.iloc[:,4],marker_symbol='circle',
                             mode='markers',
                             name='Predict '+Target_Variable_DNN[1] + ' vs. Index'),
-            row=1, col=2
-        )    
+            row=1, col=2,secondary_y=False,
+        )
+        fig2.add_trace(go.Bar(x=DNN_Dataframe.iloc[:,0], y=np.abs(DNN_Dataframe.iloc[:,4]-DNN_Dataframe.iloc[:,3]),
+                              opacity=0.5, name="Difference "+ Target_Variable_DNN[1]),row=1, col=2, secondary_y=True,)
+        fig2.update_yaxes(title_text=Target_Variable_DNN[0],row=1, col=1, secondary_y=False)
+        fig2.update_xaxes(title_text="Index in dataset",row=1, col=1,)
+        fig2.update_yaxes(title_text="<b>Difference</b>  between <b>Prediction</b> and <b>Actual</b> value for " + Target_Variable_DNN[0],row=1, col=1, secondary_y=True)
+        fig2.update_yaxes(title_text=Target_Variable_DNN[1],row=1, col=2, secondary_y=False)
+        fig2.update_xaxes(title_text="Index in dataset",row=1, col=2,)
+        fig2.update_yaxes(title_text="<b>Difference</b>  between <b>Prediction</b> and <b>Actual</b> value for " + Target_Variable_DNN[1],row=1, col=2, secondary_y=True)
+        fig2.update_layout(
+            autosize=False,
+            width=1500,
+            height=600,
+            margin=dict(
+            l=50,
+            r=50,
+            b=100,
+            t=100,
+            pad=4
+        ),
+        )
     st.plotly_chart(fig2)   
     st.write(' ')
     st.markdown('<p class="font_text">Learning curve based on the above hyper-parameters:</p>', unsafe_allow_html=True)
@@ -792,6 +841,13 @@ with tab7:
     fig1 = go.Figure()
     fig1.add_trace(go.Scatter(x=train_sizes, y=train_mean,mode='lines',name='Training Score'))
     fig1.add_trace(go.Scatter(x=train_sizes, y=test_mean ,mode='lines',name='Testing Score'))
+    fig1.update_yaxes(title_text="(Deep) Neural Network Score based on " +Scoring_DNN)
+    fig1.update_xaxes(title_text="Number of data used for training")
+    fig1.update_layout(
+        autosize=False,
+        width=1500,
+        height=600,
+    )
     st.plotly_chart(fig1)
 
 ####################################################################################################################################################################
@@ -869,44 +925,28 @@ with tab8:
     
     st.write('Accuracy of investigated Gaussian Process Regression using the suggested kernel configuration based on the "',Accuracy_Score,'" metric, is ', Score_Metric_GPR, '.')
     st.write(' ')
-    
-    fig = go.Figure([
-        go.Scatter(
-            x=Index,
-            y=Y_GPR,
-            mode='markers',
-            marker_symbol='circle',
-            name='Acutal '+Target_Variable_GPR,
-        ),
-        go.Scatter(
-            x=Index,
-            y=Mean_Prediction_GPR,
-            mode='lines',
-            line=dict(color='red'),
-            name='GPR Prediction for '+Target_Variable_GPR,
-        ),
-        go.Scatter(
-            name='Upper Bound',
-            x=Index,
-            y=Mean_Prediction_GPR+1.9*Std_Prediction_GPR,
-            mode='lines',
-            marker=dict(color="#444"),
-            line=dict(width=0),
-            showlegend=False
-        ),
-        go.Scatter(
-            name='Lower Bound',
-            x=Index,
-            y=Mean_Prediction_GPR-1.9*Std_Prediction_GPR,
-            marker=dict(color="#444"),
-            line=dict(width=0),
-            mode='lines',
-            fillcolor='rgba(68, 68, 68, 0.3)',
-            fill='tonexty',
-            showlegend=False)
-    ])
-    fig.update_layout(yaxis_title=Target_Variable_GPR)
-        
+    fig = make_subplots(specs=[[{"secondary_y": True}]])
+    fig.add_trace(go.Scatter(x=Index, y=Y_GPR,marker_symbol='square',
+                        mode='markers',
+                        name='Acutal '+Target_Variable_GPR,),secondary_y=False,)
+    fig.add_trace(go.Scatter(x=Index, y=Mean_Prediction_GPR,marker_symbol='circle',
+                        mode='lines', line=dict(color='red'), name='GPR Prediction for '+Target_Variable_GPR,),secondary_y=False,)
+    fig.add_trace(go.Scatter(name='Upper Bound',x=Index,y=Mean_Prediction_GPR+1.9*Std_Prediction_GPR,
+                             mode='lines',marker=dict(color="#444"),line=dict(width=0)
+                             ,showlegend=False),secondary_y=False,)
+    fig.add_trace(go.Scatter(name='Lower Bound', x=Index, y=Mean_Prediction_GPR-1.9*Std_Prediction_GPR,
+        marker=dict(color="#444"), line=dict(width=0), mode='lines', fillcolor='rgba(68, 68, 68, 0.3)',
+        fill='tonexty', showlegend=False),secondary_y=False,)
+    fig.add_trace(go.Bar(x=Index, y=np.abs(Mean_Prediction_GPR-Y_GPR),
+                          opacity=0.5, name="Difference"), secondary_y=True,)
+    fig.update_yaxes(title_text=Target_Variable_GPR, secondary_y=False,)
+    fig.update_xaxes(title_text="Index in dataset")
+    fig.update_yaxes(title_text="<b>Difference</b>  between <b>Prediction</b> and <b>Actual</b> value for "+Target_Variable_GPR, secondary_y=True,)
+    fig.update_layout(
+        autosize=False,
+        width=1500,
+        height=600,
+    )
     st.plotly_chart(fig)
     
 ##################################################################################################################################################################
@@ -1018,13 +1058,23 @@ with tab9:
         SVR_Dataframe.iloc[:,0]=Index
         SVR_Dataframe.iloc[:,1]=Y_SVR
         SVR_Dataframe.iloc[:,2]=Y_Predic_SVR
-        fig2 = go.Figure()
+        fig2 = make_subplots(specs=[[{"secondary_y": True}]])
         fig2.add_trace(go.Scatter(x=SVR_Dataframe.iloc[:,0], y=SVR_Dataframe.iloc[:,1],marker_symbol='square',
                             mode='markers',
-                            name='Actual '+Target_Variable_SVR[0] + ' vs. Index'))
+                            name='Actual '+Target_Variable_SVR[0] + ' vs. Index'),secondary_y=False,)
         fig2.add_trace(go.Scatter(x=SVR_Dataframe.iloc[:,0], y=SVR_Dataframe.iloc[:,2],marker_symbol='circle',
                             mode='markers',
-                            name='Prediction '+Target_Variable_SVR[0] + ' vs. Index'))
+                            name='Prediction '+Target_Variable_SVR[0] + ' vs. Index'),secondary_y=False,)
+        fig2.add_trace(go.Bar(x=SVR_Dataframe.iloc[:,0], y=np.abs(SVR_Dataframe.iloc[:,2]-SVR_Dataframe.iloc[:,1]),
+                              opacity=0.5, name="Difference"), secondary_y=True,)
+        fig2.update_yaxes(title_text=Target_Variable_SVR[0], secondary_y=False)
+        fig2.update_xaxes(title_text="Index in dataset")
+        fig2.update_yaxes(title_text="<b>Difference</b>  between <b>Prediction</b> and <b>Actual</b> value for " + Target_Variable_SVR[0], secondary_y=True)
+        fig2.update_layout(
+            autosize=False,
+            width=1500,
+            height=600,
+        )
     else:
         SVR_Dataframe=pd.DataFrame(index=np.arange(len(Y_Linear)), columns=np.arange(5))
         SVR_Dataframe.columns=['Index','Actual '+Target_Variable_SVR[0],'Predict '+Target_Variable_SVR[0],'Actual '+Target_Variable_SVR[1],'Predict '+Target_Variable_SVR[1]]
@@ -1033,32 +1083,35 @@ with tab9:
         SVR_Dataframe.iloc[:,2]=Y_Predic_SVR[:,0]
         SVR_Dataframe.iloc[:,3]=Y_SVR[:,1]
         SVR_Dataframe.iloc[:,4]=Y_Predic_SVR[:,1]
-        fig2 = make_subplots(rows=1, cols=2)
-        fig2.add_trace(
-            go.Scatter(x=SVR_Dataframe.iloc[:,0], y=SVR_Dataframe.iloc[:,1],marker_symbol='square',
-                            mode='markers',
-                            name='Actual '+Target_Variable_SVR[0] + ' vs. Index'),
-            row=1, col=1
+        fig2 = make_subplots(specs=[[{"secondary_y": True}, {"secondary_y": True}]],rows=1, cols=2)
+        fig2.add_trace(go.Scatter(x=SVR_Dataframe.iloc[:,0], y=SVR_Dataframe.iloc[:,1],marker_symbol='square',
+                        mode='markers',name='Actual '+Target_Variable_SVR[0] + ' vs. Index'),secondary_y=False,row=1, col=1)
+        fig2.add_trace(go.Scatter(x=SVR_Dataframe.iloc[:,0], y=SVR_Dataframe.iloc[:,2],marker_symbol='circle',
+                        mode='markers', name='Predict '+Target_Variable_SVR[0] + ' vs. Index'),secondary_y=False,row=1, col=1)
+        fig2.add_trace(go.Bar(x=SVR_Dataframe.iloc[:,0], y=np.abs(SVR_Dataframe.iloc[:,2]-SVR_Dataframe.iloc[:,1]),
+                              opacity=0.5, name="Difference for "+Target_Variable_SVR[0]), secondary_y=True,row=1, col=1)
+        
+        fig2.add_trace(go.Scatter(x=SVR_Dataframe.iloc[:,0], y=SVR_Dataframe.iloc[:,3],marker_symbol='square',
+                        mode='markers',name='Actual '+Target_Variable_SVR[1] + ' vs. Index'),secondary_y=False,row=1, col=2)
+        fig2.add_trace(go.Scatter(x=SVR_Dataframe.iloc[:,0], y=SVR_Dataframe.iloc[:,4],marker_symbol='circle',
+                        mode='markers', name='Predict '+Target_Variable_SVR[1] + ' vs. Index'),secondary_y=False,row=1, col=2)
+        fig2.add_trace(go.Bar(x=SVR_Dataframe.iloc[:,0], y=np.abs(SVR_Dataframe.iloc[:,3]-SVR_Dataframe.iloc[:,4]),
+                              opacity=0.5, name="Difference for " +Target_Variable_SVR[1]), secondary_y=True,row=1, col=2)
+        
+        
+        fig2.update_yaxes(title_text=Target_Variable_SVR[0], secondary_y=False,row=1, col=1)
+        fig2.update_xaxes(title_text="Index in dataset",row=1, col=1)
+        fig2.update_yaxes(title_text="<b>Difference</b>  between <b>Prediction</b> and <b>Actual</b> value for " + Target_Variable_SVR[0], secondary_y=True,row=1, col=1)
+        fig2.update_yaxes(title_text=Target_Variable_SVR[0], secondary_y=False,row=1, col=2)
+        fig2.update_xaxes(title_text="Index in dataset",row=1, col=2)
+        fig2.update_yaxes(title_text="<b>Difference</b>  between <b>Prediction</b> and <b>Actual</b> value for " + Target_Variable_SVR[0], secondary_y=True,row=1, col=2)
+        fig2.update_layout(
+            autosize=False,
+            width=1500,
+            height=600,
         )
-        fig2.add_trace(
-            go.Scatter(x=SVR_Dataframe.iloc[:,0], y=SVR_Dataframe.iloc[:,2],marker_symbol='circle',
-                            mode='markers',
-                            name='Predict '+Target_Variable_SVR[0] + ' vs. Index'),
-            row=1, col=1
-        )
-
-        fig2.add_trace(
-            go.Scatter(x=SVR_Dataframe.iloc[:,0], y=SVR_Dataframe.iloc[:,3],marker_symbol='square',
-                            mode='markers',
-                            name='Actual '+Target_Variable_SVR[1] + ' vs. Index'),
-            row=1, col=2
-        )
-        fig2.add_trace(
-            go.Scatter(x=SVR_Dataframe.iloc[:,0], y=SVR_Dataframe.iloc[:,4],marker_symbol='circle',
-                            mode='markers',
-                            name='Predict '+Target_Variable_SVR[1] + ' vs. Index'),
-            row=1, col=2
-        )    
+        
+        
     st.plotly_chart(fig2)
     
     
@@ -1092,6 +1145,13 @@ with tab9:
     fig1 = go.Figure()
     fig1.add_trace(go.Scatter(x=train_sizes, y=train_mean,mode='lines',name='Training Score'))
     fig1.add_trace(go.Scatter(x=train_sizes, y=test_mean ,mode='lines',name='Testing Score'))
+    fig1.update_yaxes(title_text="Support Vector Regression Score based on " +Scoring_SVR)
+    fig1.update_xaxes(title_text="Number of data used for training")
+    fig1.update_layout(
+        autosize=False,
+        width=1500,
+        height=700,
+    )
     st.plotly_chart(fig1)
 ##################################################################################################################################################################
 
