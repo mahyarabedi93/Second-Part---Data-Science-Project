@@ -530,7 +530,7 @@ with tab5:
     fig.update_layout(
         autosize=False,
         width=1500,
-        height=700,
+        height=900,
     )
     fig.update_yaxes(title_text=Target_Variable, secondary_y=False)
     fig.update_xaxes(title_text="Index in dataset")
