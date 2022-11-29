@@ -530,7 +530,7 @@ with tab5:
     fig.update_layout(
         autosize=False,
         width=1500,
-        height=600,
+        height=700,
     )
     fig.update_yaxes(title_text=Target_Variable, secondary_y=False)
     fig.update_xaxes(title_text="Index in dataset")
@@ -749,7 +749,7 @@ with tab7:
         fig2.update_layout(
             autosize=False,
             width=1500,
-            height=600,
+            height=700,
         )
         fig2.update_yaxes(title_text=Target_Variable, secondary_y=False)
         fig2.update_xaxes(title_text="Index in dataset")
@@ -801,7 +801,7 @@ with tab7:
         fig2.update_layout(
             autosize=False,
             width=1500,
-            height=600,
+            height=700,
             margin=dict(
             l=50,
             r=50,
@@ -846,7 +846,7 @@ with tab7:
     fig1.update_layout(
         autosize=False,
         width=1500,
-        height=600,
+        height=700,
     )
     st.plotly_chart(fig1)
 
@@ -945,7 +945,7 @@ with tab8:
     fig.update_layout(
         autosize=False,
         width=1500,
-        height=600,
+        height=700,
     )
     st.plotly_chart(fig)
     
@@ -1073,7 +1073,7 @@ with tab9:
         fig2.update_layout(
             autosize=False,
             width=1500,
-            height=600,
+            height=700,
         )
     else:
         SVR_Dataframe=pd.DataFrame(index=np.arange(len(Y_Linear)), columns=np.arange(5))
@@ -1108,7 +1108,7 @@ with tab9:
         fig2.update_layout(
             autosize=False,
             width=1500,
-            height=600,
+            height=700,
         )
         
         
