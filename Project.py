@@ -227,26 +227,26 @@ with tab2:
 
     Plant_Data=pd.read_csv("Project Data.csv")
 
-    col1,col2,col3=st.columns(3,gap='small')
+    col1,col2,col3=st.columns([5,2,5],gap='small')
     lettuce_stat = col1.checkbox('Show statistical properties of Lettuce dataset')
 
     if lettuce_stat==True:
         st.table(Plant_Data.describe())
         st.markdown('<p class="font_subtext">Table 3: Statistical properties of lettuce cultivated under different light treatment and environmental conidtions.</p>', unsafe_allow_html=True)
 
-    lettuce_show = col2.checkbox('Show Lettuce dataset')
+    lettuce_show = col3.checkbox('Show Lettuce dataset')
 
     if lettuce_show==True:
         st.table(Plant_Data)
         st.markdown('<p class="font_subtext">Table 4: Experimental observations for lettuce cultivated under different light treatments and various environmental conidtions.</p>', unsafe_allow_html=True)
 
 
-    lettuce_hip = col3.checkbox('Show Lettuce hiplot')
+    #lettuce_hip = col3.checkbox('Show Lettuce hiplot')
 
-    if lettuce_hip==True:
-        xp = hip.Experiment.from_dataframe(Plant_Data)
-        ret_val = xp.to_streamlit(ret="selected_uids", key="hip").display()
-        st.markdown('<p class="font_subtext">Fig. 2: Hiplot for lettuce data.</p>', unsafe_allow_html=True)
+    #if lettuce_hip==True:
+    #    xp = hip.Experiment.from_dataframe(Plant_Data)
+    #    ret_val = xp.to_streamlit(ret="selected_uids", key="hip").display()
+    #    st.markdown('<p class="font_subtext">Fig. 2: Hiplot for lettuce data.</p>', unsafe_allow_html=True)
 
 ####################################################################################################################################################################
 # Plant Growth Distribution
