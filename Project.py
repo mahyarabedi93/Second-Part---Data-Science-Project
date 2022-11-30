@@ -817,7 +817,7 @@ with tab7:
     
     cols = st.columns(4,gap='medium')
     Scaler = cols[0].checkbox('Considering scaling for DNN learning curve')
-    Scoring_DNN = cols[1].selectbox('Select DNN  scoring method:',['neg_mean_squared_error', 'mean_absolute_error', 'neg_root_mean_squared_error', 'r2'],index = 0)
+    Scoring_DNN = cols[1].selectbox('Select DNN  scoring method:',['neg_mean_squared_error', 'neg_root_mean_squared_error', 'r2'],index = 0)
     CV_DNN = cols[2].slider('Input a value for DNN  number of cross-validation', 0, 20, 5)
     if Scaler:
         Scaler_Type = cols[3].selectbox('Select scaler object for DNN learning cruve:',['Min-Max Scaler', 'Standard Scaler', 'Max-Abs Scaler'],index = 0)
@@ -1121,7 +1121,7 @@ with tab9:
     
     cols = st.columns(4,gap='medium')
     Scaler = cols[0].checkbox('Considering scaling for learning curve SVR')
-    Scoring_SVR = cols[1].selectbox('Select scoring method SVR:',['neg_mean_squared_error', 'mean_absolute_error', 'neg_root_mean_squared_error', 'r2'],index = 0)
+    Scoring_SVR = cols[1].selectbox('Select scoring method SVR:',['neg_mean_squared_error', 'neg_root_mean_squared_error', 'r2'],index = 0)
     CV_SVR = cols[2].slider('Input a value for number of cross-validation SVR', 0, 20, 5)
     if Scaler:
         Scaler_Type = cols[3].selectbox('Select scaler object for SVR learning cruve:',['Min-Max Scaler', 'Standard Scaler', 'Max-Abs Scaler'],index = 0)
