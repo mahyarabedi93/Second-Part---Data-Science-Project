@@ -720,7 +720,7 @@ with tab7:
     st.markdown('<p class="font_text">Accuracy of the investigated (deep) neural network architecture:</p>', unsafe_allow_html=True)
     st.write(' ')
     colm = st.columns(2,gap='small')
-    Accuracy_Score = colm[0].selectbox('Select score metric:',['mean_absolute_error','mean_squared_error','r2_score'],index = 2)
+    Accuracy_Score = colm[0].selectbox('Select score metric for DNN:',['mean_absolute_error','mean_squared_error','r2_score'],index = 2)
     if Accuracy_Score == 'mean_absolute_error':
         Score_Metric_DNN = mean_absolute_error(Y_DNN,Y_Predic_DNN)
     elif Accuracy_Score == 'mean_squared_error':
@@ -1124,7 +1124,7 @@ with tab9:
     Scoring_SVR = cols[1].selectbox('Select scoring method SVR:',['neg_mean_squared_error', 'mean_absolute_error', 'neg_root_mean_squared_error', 'r2'],index = 0)
     CV_SVR = cols[2].slider('Input a value for number of cross-validation SVR', 0, 20, 5)
     if Scaler:
-        Scaler_Type = cols[3].selectbox('Select scaler object for learning cruve:',['Min-Max Scaler', 'Standard Scaler', 'Max-Abs Scaler'],index = 0)
+        Scaler_Type = cols[3].selectbox('Select scaler object for SVR learning cruve:',['Min-Max Scaler', 'Standard Scaler', 'Max-Abs Scaler'],index = 0)
         if Scaler_Type == 'Min-Max Scaler':
             Scaler_Object = MinMaxScaler()
         elif Scaler_Type == 'Standard Scaler':
