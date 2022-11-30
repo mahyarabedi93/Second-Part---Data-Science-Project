@@ -816,9 +816,9 @@ with tab7:
     st.write(' ')
     
     cols = st.columns(4,gap='medium')
-    Scaler = cols[0].checkbox('Considering scaling for learning curve')
-    Scoring_DNN = cols[1].selectbox('Select scoring method:',['neg_mean_squared_error', 'mean_absolute_error', 'neg_root_mean_squared_error', 'r2'],index = 0)
-    CV_DNN = cols[2].slider('Input a value for number of cross-validation', 0, 20, 5)
+    Scaler = cols[0].checkbox('Considering scaling for DNN learning curve')
+    Scoring_DNN = cols[1].selectbox('Select DNN  scoring method:',['neg_mean_squared_error', 'mean_absolute_error', 'neg_root_mean_squared_error', 'r2'],index = 0)
+    CV_DNN = cols[2].slider('Input a value for DNN  number of cross-validation', 0, 20, 5)
     if Scaler:
         Scaler_Type = cols[3].selectbox('Select scaler object for DNN learning cruve:',['Min-Max Scaler', 'Standard Scaler', 'Max-Abs Scaler'],index = 0)
         if Scaler_Type == 'Min-Max Scaler':
@@ -868,7 +868,7 @@ with tab8:
     col = st.columns(5,gap='small')
     Kernel_GPR = col[0].selectbox('Select kernel function for GPR:',['RBF', 'RationalQuadratic', 'Matern', 'ExpSineSquared','DotProduct'],index = 0)
     Random_State_GPR = col[2].slider('Input a value for random state GPR', 0, 200, 40)
-    Restart_Optimizer_Kernel_GPR = col[3].slider('The number of restarts of the kernel’s optimizer', 0, 1000, 800)
+    Restart_Optimizer_Kernel_GPR = col[3].slider('The number of restarts of the GPR kernel’s optimizer', 0, 1000, 800)
     Alpha_GPR = col[1].number_input('Input a value for alpha Gaussian Process Regression: ',value=0.1,format='%f')
     cols = st.columns(3,gap='small')
     Train_Size_GPR = cols[0].number_input('Input a value for train-size ratio GPR:',value=0.8,format='%f')
