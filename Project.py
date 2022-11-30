@@ -481,19 +481,19 @@ with tab5:
     elif Linear_Regression == 'Ridge':
         col_1, col_2, col_3 = st.columns(3, gap = 'small')
         Solver_Ridge = col_1.selectbox('Select solver for ridge:',['auto', 'svd', 'sag'],index = 0)
-        Alpha_Ridge = col_2.number_input('Input a non-negative value for alpha: ',value=1.00,format='%f')
-        Random_State_Ridge = col_3.slider('Input a value for random state', 0, 200, 40)
+        Alpha_Ridge = col_2.number_input('Input a non-negative value for Ridge alpha: ',value=1.00,format='%f')
+        Random_State_Ridge = col_3.slider('Input a value for Ridge random state', 0, 200, 40)
         Linear_Regression_Object = Ridge(alpha = Alpha_Ridge, random_state = Random_State_Ridge, solver = Solver_Ridge)
     elif Linear_Regression == 'Lasso':
         col_1, col_2 = st.columns(2, gap = 'small')
-        Alpha_Lasso = col_1.number_input('Input a non-negative value for alpha: ',value=1.00,format='%f')
-        Random_State_Lasso = col_2.slider('Input a value for random state', 0, 200, 40)
+        Alpha_Lasso = col_1.number_input('Input a non-negative value for Lasso alpha: ',value=1.00,format='%f')
+        Random_State_Lasso = col_2.slider('Input a value for Lasso random state', 0, 200, 40)
         Linear_Regression_Object = Lasso(alpha = Alpha_Lasso, random_state = Random_State_Lasso)
     else:
         col_1, col_2, col_3 = st.columns(3, gap = 'small')
-        Alpha_Elastic = col_1.number_input('Input a non-negative value for alpha: ',value=1.00,format='%f')
-        L1_Ration_Elastic = col_2.number_input('Input a value for L1 ration between 0 and 1: ',value=0.500,step=0.001,format='%f')
-        Random_State_Elastic = col_3.slider('Input a value for random state', 0, 200, 40)
+        Alpha_Elastic = col_1.number_input('Input a non-negative value for ElasticNet alpha: ',value=1.00,format='%f')
+        L1_Ration_Elastic = col_2.number_input('Input a value for L1 ration between 0 and 1 for ElasticNet: ',value=0.500,step=0.001,format='%f')
+        Random_State_Elastic = col_3.slider('Input a value for ElasticNet random state', 0, 200, 40)
         Linear_Regression_Object = ElasticNet(alpha = Alpha_Elastic, random_state = Random_State_Elastic, l1_ratio = L1_Ration_Elastic)
     
     if Scaler:
@@ -653,27 +653,27 @@ with tab7:
     
     col1 , col2 , col3 , col4, col5= st.columns(5,gap='small')
     st.write(' ')
-    Activation_DNN = col1.selectbox('Select activation function:',['identity', 'relu', 'logistic', 'tanh'],index = 0)
+    Activation_DNN = col1.selectbox('Select activation function for DNN:',['identity', 'relu', 'logistic', 'tanh'],index = 0)
     
-    Solver_DNN = col2.selectbox('Select solver type:',['adam', 'sgd', 'lbfgs'],index = 0)
+    Solver_DNN = col2.selectbox('Select solver type for DNN:',['adam', 'sgd', 'lbfgs'],index = 0)
     
-    Alpha_DNN = col3.number_input('Input a non-negative value for alpha: ',value=0.01,format='%f')
+    Alpha_DNN = col3.number_input('Input a non-negative value for DNN alpha: ',value=0.01,format='%f')
     
-    Learning_Rate_DNN = col4.selectbox('Select learning rate type:',['constant', 'invscaling', 'adaptive'],index = 0)
+    Learning_Rate_DNN = col4.selectbox('Select learning rate type DNN:',['constant', 'invscaling', 'adaptive'],index = 0)
     
-    Learning_Rate_Init_DNN = col5.number_input('Input a value for initial learning rate: ',value=0.001,format='%f')
+    Learning_Rate_Init_DNN = col5.number_input('Input a value for DNN initial learning rate: ',value=0.001,format='%f')
     st.write(' ')
     col1 , col2 , col3 , col4= st.columns(4,gap='small')
     st.write(' ')
-    #Validation_Fraction_DNN = col2.number_input('Input a value for validation fraction:',value=0.2,format='%f')
+    #Validation_Fraction_DNN = col2.number_input('Input a value DNN for validation fraction:',value=0.2,format='%f')
     
-    Max_Iteration_DNN = col2.slider('Input a value for number of iteration:', 0, 20000, 200)
+    Max_Iteration_DNN = col2.slider('Input a value for number of DNN iteration:', 0, 20000, 200)
     
-    Random_State_DNN = col4.slider('Input a value for random state', 0, 200, 40)
+    Random_State_DNN = col4.slider('Input a value for DNN random state', 0, 200, 40)
     
-    Tolerence_DNN = col1.number_input('Input a value for tolerence: ',value=0.0001,format='%f')
+    Tolerence_DNN = col1.number_input('Input a value for DNN tolerence: ',value=0.0001,format='%f')
     
-    Batch_Size_DNN = col3.slider('Input a value for batch size:', 0, len(Y_Linear), 40)
+    Batch_Size_DNN = col3.slider('Input a value for DNN batch size:', 0, len(Y_Linear), 40)
     st.write(' ')
     col1, col2, col3= st.columns(3,gap='small')
     st.write(' ')
@@ -820,7 +820,7 @@ with tab7:
     Scoring_DNN = cols[1].selectbox('Select scoring method:',['neg_mean_squared_error', 'mean_absolute_error', 'neg_root_mean_squared_error', 'r2'],index = 0)
     CV_DNN = cols[2].slider('Input a value for number of cross-validation', 0, 20, 5)
     if Scaler:
-        Scaler_Type = cols[3].selectbox('Select scaler object for learning cruve:',['Min-Max Scaler', 'Standard Scaler', 'Max-Abs Scaler'],index = 0)
+        Scaler_Type = cols[3].selectbox('Select scaler object for DNN learning cruve:',['Min-Max Scaler', 'Standard Scaler', 'Max-Abs Scaler'],index = 0)
         if Scaler_Type == 'Min-Max Scaler':
             Scaler_Object = MinMaxScaler()
         elif Scaler_Type == 'Standard Scaler':
