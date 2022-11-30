@@ -655,7 +655,7 @@ with tab7:
     st.write(' ')
     Activation_DNN = col1.selectbox('Select activation function for DNN:',['identity', 'relu', 'logistic', 'tanh'],index = 0)
     
-    Solver_DNN = col2.selectbox('Select solver type for DNN:',['adam', 'sgd', 'lbfgs'],index = 0)
+    Solver_DNN = col2.selectbox('Select solver type for DNN:',['adam', 'lbfgs'],index = 0)
     
     Alpha_DNN = col3.number_input('Input a non-negative value for DNN alpha: ',value=0.01,format='%f')
     
